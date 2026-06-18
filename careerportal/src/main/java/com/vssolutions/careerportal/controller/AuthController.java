@@ -28,22 +28,23 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Candidate candidate) {
-        try {
-            Candidate saved = candidateService.registerCandidate(candidate);
-            String token = jwtUtil.generateToken(saved.getEmail(), saved.getRole());
-            return ResponseEntity.ok(Map.of(
-                "id",       saved.getId(),
-                "fullName", saved.getFullName(),
-                "email",    saved.getEmail(),
-                "role",     saved.getRole(),
-                "token",    token
-            ));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
-        }
+public ResponseEntity<?> register(@RequestBody Candidate candidate) {
+    try {
+        Candidate saved = candidateService.registerCandidate(candidate);
+        String token = jwtUtil.generateToken(saved.getEmail(), saved.getRole());
+        return ResponseEntity.ok(Map.of(
+            "id",       saved.getId(),
+            "fullName", saved.getFullName(),
+            "email",    saved.getEmail(),
+            "role",     saved.getRole(),
+            "token",    token
+        ));
+    } catch (RuntimeException e) {
+        return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
     }
-
+}
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         try {
