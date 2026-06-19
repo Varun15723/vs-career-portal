@@ -2,8 +2,8 @@ package com.vssolutions.careerportal.controller;
 
 import com.vssolutions.careerportal.model.Job;
 import com.vssolutions.careerportal.model.Recruiter;
-import com.vssolutions.careerportal.repository.RecruiterRepository;
 import com.vssolutions.careerportal.service.JobService;
+import com.vssolutions.careerportal.service.RecruiterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,7 +19,7 @@ public class JobController {
     private JobService jobService;
 
     @Autowired
-    private RecruiterRepository recruiterRepository;
+    private RecruiterService recruiterService;
 
     @GetMapping
     public List<Job> getAllJobs() {
@@ -38,20 +38,21 @@ public class JobController {
             .orElse(ResponseEntity.notFound().build());
     }
 
-   @PostMapping
-public ResponseEntity<?> createJob(@RequestBody Job job, Authentication auth) {
-    try {
-        if (auth == null) {
-            return ResponseEntity.status(401).body(Map.of("message", "Unauthorized - Please login"));
+    @PostMapping
+    public ResponseEntity<?> createJob(@RequestBody Job job, Authentication auth) {
+        try {
+            if (auth == null) {
+                return ResponseEntity.status(401).body(Map.of("message", "Unauthorized - Please login"));
+            }
+            Recruiter recruiter = recruiterService.findByEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("Recruiter not found"));
+            job.setPostedBy(recruiter);
+            return ResponseEntity.ok(jobService.createJob(job));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
-        Recruiter recruiter = recruiterRepository.findByEmail(auth.getName())
-            .orElseThrow(() -> new RuntimeException("Recruiter not found"));
-        job.setPostedBy(recruiter);
-        return ResponseEntity.ok(jobService.createJob(job));
-    } catch (RuntimeException e) {
-        return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
     }
-}
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateJob(@PathVariable Long id, @RequestBody Job job) {
         try {
