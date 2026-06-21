@@ -29,6 +29,12 @@ public class JobService {
             .findByTitleContainingIgnoreCaseOrCompanyContainingIgnoreCase(query, query);
     }
 
+    // NEW — Filter Jobs by location / jobType / experience / department
+    // Pass null for any filter you don't want applied
+    public List<Job> filterJobs(String location, String jobType, String experience, String department) {
+        return jobRepository.filterJobs(location, jobType, experience, department);
+    }
+
     // Create Job
     public Job createJob(Job job) {
         return jobRepository.save(job);

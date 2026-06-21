@@ -31,6 +31,16 @@ public class JobController {
         return jobService.searchJobs(q);
     }
 
+    // NEW — Filter jobs by location, jobType, experience, department.
+    // All params optional - e.g. GET /api/jobs/filter?location=Hyderabad&jobType=Full-time
+    @GetMapping("/filter")
+    public List<Job> filterJobs(@RequestParam(required = false) String location,
+                                 @RequestParam(required = false) String jobType,
+                                 @RequestParam(required = false) String experience,
+                                 @RequestParam(required = false) String department) {
+        return jobService.filterJobs(location, jobType, experience, department);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getJobById(@PathVariable Long id) {
         return jobService.getJobById(id)
