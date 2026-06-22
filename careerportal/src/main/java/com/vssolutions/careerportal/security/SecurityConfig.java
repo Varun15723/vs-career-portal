@@ -28,9 +28,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/jobs").permitAll()
                 .requestMatchers("/api/jobs/search").permitAll()
+                .requestMatchers("/api/jobs/filter").permitAll()   // FIXED — was missing, defaulted to authenticated
                 .requestMatchers("/api/jobs/{id}").permitAll()
                 .requestMatchers("/api/candidates/**").hasRole("CANDIDATE")
                 .requestMatchers("/api/resume/**").hasRole("CANDIDATE")
+                .requestMatchers("/api/saved-jobs/**").hasRole("CANDIDATE") // NEW — explicit rule for saved jobs
                 .requestMatchers("/api/recruiters/**").hasRole("RECRUITER")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/notifications/**").authenticated()
