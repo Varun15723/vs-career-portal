@@ -1,4 +1,4 @@
-﻿package com.vssolutions.careerportal.repository;
+package com.vssolutions.careerportal.repository;
 
 import com.vssolutions.careerportal.model.RecruiterProfile;
 import org.springframework.data.jpa.repository.JpaRepository;

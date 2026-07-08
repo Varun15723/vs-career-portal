@@ -3,6 +3,7 @@ package com.vssolutions.careerportal.controller;
 import com.vssolutions.careerportal.model.Application;
 import com.vssolutions.careerportal.model.Candidate;
 import com.vssolutions.careerportal.service.ApplicationService;
+import com.vssolutions.careerportal.service.AuditLogService;
 import com.vssolutions.careerportal.service.CandidateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,10 @@ public class ApplicationController {
 
     @Autowired
     private CandidateService candidateService;
+
+    // NEW — Audit Logs module
+    @Autowired
+    private AuditLogService auditLogService;
 
     @PostMapping("/apply/{jobId}")
     public ResponseEntity<?> applyJob(@PathVariable Long jobId, Authentication auth) {
@@ -48,9 +53,15 @@ public class ApplicationController {
 
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(@PathVariable Long id,
-                                          @RequestBody Map<String, String> body) {
+                                          @RequestBody Map<String, String> body,
+                                          Authentication auth) {
         try {
             Application application = applicationService.updateStatus(id, body.get("status"));
+
+            String actor = auth != null ? auth.getName() : "unknown";
+            auditLogService.log(actor, "recruiter", "APPLICATION_STATUS_CHANGED",
+                "Application", application.getId(), "Status changed to: " + body.get("status"));
+
             return ResponseEntity.ok(application);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
@@ -59,7 +70,8 @@ public class ApplicationController {
 
     @PutMapping("/{id}/interview")
     public ResponseEntity<?> scheduleInterview(@PathVariable Long id,
-                                               @RequestBody Map<String, String> body) {
+                                               @RequestBody Map<String, String> body,
+                                               Authentication auth) {
         try {
             Application application = applicationService.scheduleInterview(
                 id,
@@ -68,6 +80,12 @@ public class ApplicationController {
                 body.get("mode"),
                 body.get("link")
             );
+
+            String actor = auth != null ? auth.getName() : "unknown";
+            auditLogService.log(actor, "recruiter", "INTERVIEW_SCHEDULED",
+                "Application", application.getId(),
+                "Interview on " + body.get("date") + " at " + body.get("time"));
+
             return ResponseEntity.ok(application);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));

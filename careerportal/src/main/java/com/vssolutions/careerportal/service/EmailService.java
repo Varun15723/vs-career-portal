@@ -155,4 +155,52 @@ public class EmailService {
         """.formatted(name, jobTitle, color, status);
         sendEmail(to, "Application Update - " + jobTitle, html);
     }
+
+    // 5. Password Reset
+    public void sendPasswordResetEmail(String to, String resetLink) {
+        String html = """
+            <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;">
+              <div style="background-color:#0073e6;padding:20px;border-radius:8px 8px 0 0;text-align:center;">
+                <h1 style="color:white;margin:0;">VS-Solutions</h1>
+                <p style="color:#cce5ff;">Career Portal</p>
+              </div>
+              <div style="padding:30px;">
+                <h2>Reset Your Password</h2>
+                <p>We received a request to reset your password. This link expires in 15 minutes.</p>
+                <p>If you didn't request this, you can safely ignore this email.</p>
+                <div style="text-align:center;margin:30px 0;">
+                  <a href="%s" style="background-color:#0073e6;color:white;padding:12px 30px;border-radius:5px;text-decoration:none;">Reset Password</a>
+                </div>
+              </div>
+              <div style="background-color:#f5f5f5;padding:15px;text-align:center;">
+                <p style="color:#999;font-size:12px;">2026 VS-Solutions. All rights reserved.</p>
+              </div>
+            </div>
+        """.formatted(resetLink);
+        sendEmail(to, "Reset your VS-Solutions password", html);
+    }
+
+    // 6. OTP Verification Code
+    public void sendOtpEmail(String to, String code, String purpose) {
+        String html = """
+            <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;">
+              <div style="background-color:#0073e6;padding:20px;border-radius:8px 8px 0 0;text-align:center;">
+                <h1 style="color:white;margin:0;">VS-Solutions</h1>
+                <p style="color:#cce5ff;">Career Portal</p>
+              </div>
+              <div style="padding:30px;">
+                <h2>Your Verification Code</h2>
+                <p>Use the code below to complete your %s. This code expires in 5 minutes.</p>
+                <div style="text-align:center;margin:30px 0;">
+                  <span style="font-size:32px;font-weight:bold;letter-spacing:8px;color:#0073e6;">%s</span>
+                </div>
+                <p>If you didn't request this, you can safely ignore this email.</p>
+              </div>
+              <div style="background-color:#f5f5f5;padding:15px;text-align:center;">
+                <p style="color:#999;font-size:12px;">2026 VS-Solutions. All rights reserved.</p>
+              </div>
+            </div>
+        """.formatted(purpose.toLowerCase().replace("_", " "), code);
+        sendEmail(to, "Your VS-Solutions verification code", html);
+    }
 }

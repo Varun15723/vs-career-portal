@@ -1,4 +1,4 @@
-﻿package com.vssolutions.careerportal.controller;
+package com.vssolutions.careerportal.controller;
 
 import com.vssolutions.careerportal.dto.RecruiterProfileDTO;
 import com.vssolutions.careerportal.model.RecruiterProfile;

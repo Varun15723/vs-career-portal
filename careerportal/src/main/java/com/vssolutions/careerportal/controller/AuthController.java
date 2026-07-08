@@ -4,6 +4,7 @@ import com.vssolutions.careerportal.model.Candidate;
 import com.vssolutions.careerportal.model.Recruiter;
 import com.vssolutions.careerportal.security.JwtUtil;
 import com.vssolutions.careerportal.service.CandidateService;
+import com.vssolutions.careerportal.service.LoginHistoryService;
 import com.vssolutions.careerportal.service.RecruiterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,10 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // NEW — Login History module
+    @Autowired
+    private LoginHistoryService loginHistoryService;
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Candidate candidate) {
         try {
@@ -48,18 +53,19 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
+        String email    = body.get("email");
+        String password = body.get("password");
         try {
-            String email    = body.get("email");
-            String password = body.get("password");
-
             Candidate candidate = candidateService.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
             if (!passwordEncoder.matches(password, candidate.getPassword())) {
+                loginHistoryService.record(email, "candidate", false, "Incorrect password");
                 return ResponseEntity.badRequest().body(Map.of("message", "Invalid email or password"));
             }
 
             String token = jwtUtil.generateToken(candidate.getEmail(), candidate.getRole());
+            loginHistoryService.record(email, "candidate", true, null);
             return ResponseEntity.ok(Map.of(
                 "id",       candidate.getId(),
                 "fullName", candidate.getFullName(),
@@ -68,6 +74,7 @@ public class AuthController {
                 "token",    token
             ));
         } catch (RuntimeException e) {
+            loginHistoryService.record(email, "candidate", false, e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
@@ -93,18 +100,19 @@ public class AuthController {
 
     @PostMapping("/recruiter/login")
     public ResponseEntity<?> recruiterLogin(@RequestBody Map<String, String> body) {
+        String email    = body.get("email");
+        String password = body.get("password");
         try {
-            String email    = body.get("email");
-            String password = body.get("password");
-
             Recruiter recruiter = recruiterService.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
             if (!passwordEncoder.matches(password, recruiter.getPassword())) {
+                loginHistoryService.record(email, "recruiter", false, "Incorrect password");
                 return ResponseEntity.badRequest().body(Map.of("message", "Invalid email or password"));
             }
 
             String token = jwtUtil.generateToken(recruiter.getEmail(), recruiter.getRole());
+            loginHistoryService.record(email, "recruiter", true, null);
             return ResponseEntity.ok(Map.of(
                 "id",      recruiter.getId(),
                 "name",    recruiter.getName(),
@@ -114,6 +122,7 @@ public class AuthController {
                 "token",   token
             ));
         } catch (RuntimeException e) {
+            loginHistoryService.record(email, "recruiter", false, e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }

@@ -1,4 +1,4 @@
-﻿package com.vssolutions.careerportal.model;
+package com.vssolutions.careerportal.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

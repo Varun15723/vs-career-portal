@@ -1,4 +1,4 @@
-﻿package com.vssolutions.careerportal.dto;
+package com.vssolutions.careerportal.dto;
 
 /**
  * DTO for creating/updating a Recruiter's profile.

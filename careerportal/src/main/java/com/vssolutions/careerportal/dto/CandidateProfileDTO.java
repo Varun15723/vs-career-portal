@@ -1,4 +1,4 @@
-﻿package com.vssolutions.careerportal.dto;
+package com.vssolutions.careerportal.dto;
 
 import java.time.LocalDate;
 
